@@ -1,0 +1,31 @@
+- mamba config append channels conda-forge
+- mamba config set channel_priority strict
+- mamba config list channels
+channels:
+  - conda-forge
+  - https://repo.anaconda.com/pkgs/main
+  - https://repo.anaconda.com/pkgs/r
+- mamba create -p /Users/hidekazukakei/Documents/GitHub/lsd-dev/net_app/envs python=3.12
+- mamba shell init --shell zsh --root-prefix ~/miniconda3
+Running `shell init`, which:
+ - modifies RC file: "/Users/hidekazukakei/.zshrc"
+ - generates config for root prefix: "/Users/hidekazukakei/miniconda3"
+ - sets mamba executable to: "/Users/hidekazukakei/miniconda3/bin/mamba"
+The following has been added in your "/Users/hidekazukakei/.zshrc" file
+
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'mamba shell init' !!
+export MAMBA_EXE='/Users/hidekazukakei/miniconda3/bin/mamba';
+export MAMBA_ROOT_PREFIX='/Users/hidekazukakei/miniconda3';
+__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+else
+    alias mamba="$MAMBA_EXE"  # Fallback on help from mamba activate
+fi
+unset __mamba_setup
+# <<< mamba initialize <<<
+- mamba activate /Users/hidekazukakei/Documents/GitHub/lsd-dev/net_app/envs
+- pip install flask flask_sqlalchemy python-dotenv
+- pip install flask-login email-validator
+- pip install black ruff
