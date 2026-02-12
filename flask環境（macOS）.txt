@@ -1,5 +1,5 @@
 miraforge3がインストール済みの場合
-cd Users/hidekazukakei/Documents/GitHub/lsd-dev/net_app
+cd /Users/hidekazukakei/Documents/GitHub/lsd-dev/net_app
 mamba env create -f environment.yml -p /Users/hidekazukakei/Documents/GitHub/lsd-dev/net_app/envs
 
 
