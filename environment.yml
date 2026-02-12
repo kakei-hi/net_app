@@ -2,6 +2,7 @@ name: null
 channels:
   - conda-forge
 dependencies:
+  - python=3.12.12
   - bzip2=1.0.8=hd037594_8
   - ca-certificates=2026.1.4=hbd8a1cb_0
   - icu=78.2=h38cb7af_0
