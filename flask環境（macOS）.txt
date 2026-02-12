@@ -1,3 +1,8 @@
+miraforge3がインストール済みの場合
+cd Users/hidekazukakei/Documents/GitHub/lsd-dev/net_app
+mamba env create -f environment.yml -p /Users/hidekazukakei/Documents/GitHub/lsd-dev/net_app/envs
+
+
 - mamba config append channels conda-forge
 - mamba config set channel_priority strict
 - mamba config list channels
@@ -29,3 +34,4 @@ unset __mamba_setup
 - pip install flask flask_sqlalchemy python-dotenv
 - pip install flask-login email-validator
 - pip install black ruff
+
