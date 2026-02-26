@@ -1,12 +1,19 @@
-<!DOCTYPE html>
-<html lang="ja">
-    <head>
-        <meta charset="UTF-8">
-        <title>DETAIL</title>
-    </head>
-    <body>
-        <h1>DETAIL</h1>
-        <p>詳細ページです。</p>
-        <hr>
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}DETAIL{% endblock %}
+
+{% block header %}<h1>DETAIL</h1>{% endblock %}
+
+{% block content %}
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <td>Apple</td>
+        </tr>
+        <tr>
+            <th>Price</th>
+            <td>100</td>
+        </tr>
+{% endblock %}
+
+{% block footer %}<a href="/list">LISTへ</a>{% endblock %}

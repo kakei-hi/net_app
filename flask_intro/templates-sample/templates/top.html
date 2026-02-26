@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html lang="ja">
-    <head>
-        <meta charset="UTF-8">
-        <title>TOP</title>
-    </head>
-    <body>
-        <h1>TOP</h1>
-        <p>トップページです。</p>
-        <hr>
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}TOP{% endblock %}
+
+{% block header %}
+<h1>TOP</h1>
+{% endblock %}
+
+{% block content %}
+<a href="/list">LISTへ</a>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>LIST</title>
-</head>
-<body>
-    <h1>LIST</h1>
+{% extends "base.html" %}
+
+{% block title %}List{% endblock %}
+
+{% block header %}<h1>LIST</h1>{% endblock %}
+
+{% block content %}
     <ul>
         <li>Apple</li>
         <li>Banana</li>
         <li>Cherry</li>
     </ul>
     <hr>
-    </body>
-</html>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
