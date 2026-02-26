@@ -8,6 +8,6 @@
         {% block header %}ヘッダー{% endblock %}
         {% block content %}内容{% endblock %}
         <hr>
-        {% block footer %}<a href="/">TOPへ戻る</a>{% endblock %}
+        {% block footer %}<a href="{{ url_for('index') }}">TOPへ戻る</a>{% endblock %}
     </body>
 </html>

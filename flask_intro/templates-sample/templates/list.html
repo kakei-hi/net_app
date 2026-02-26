@@ -6,8 +6,8 @@
 
 {% block content %}
     <ul>
-        <li><a href="/detail">Apple</a></li>
-        <li>Banana</li>
-        <li>Cherry</li>
+        <li><a href="{{ url_for('item_detail', id=1, name='Apple') }}">Apple</a></li>
+        <li><a href="{{ url_for('item_detail', id=2, name='Banana') }}">Banana</a></li>
+        <li><a href="{{ url_for('item_detail', id=3, name='Cherry') }}">Cherry</a></li>
     </ul>
 {% endblock %}

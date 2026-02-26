@@ -13,13 +13,13 @@ def index():
 
 # list
 @app.route('/list')
-def list():
+def item_list():
     return render_template('list.html')
 
 # detail
-@app.route('/detail')
-def detail():
-    return render_template('detail.html')   
+@app.route('/detail/<int:id>/<name>')
+def item_detail(id, name):
+    return render_template('detail.html', show_id=id, show_name=name)
 
 # Run the application
 if __name__ == '__main__':

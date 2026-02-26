@@ -7,14 +7,16 @@
 {% block content %}
     <table border="1">
         <tr>
-            <th>Name</th>
-            <td>Apple</td>
+            <td>ID: </td>
+            <td>{{ show_id }}</td>
         </tr>
         <tr>
-            <th>Price</th>
-            <td>100</td>
-        </tr>
+            <td>Name: </td>
+            <td>{{ show_name }}</td>
     </table>
 {% endblock %}
 
-{% block footer %}<a href="/list">LISTへ</a>{% endblock %}
+{% block footer %}
+    {{super()}}
+    <a href="{{ url_for('item_list') }}">LISTへ</a>
+{% endblock %}
