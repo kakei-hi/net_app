@@ -1,0 +1,14 @@
+{% extends "jinja/base2.html" %}
+
+{% block title %}render template #2{% endblock %}
+
+{% block header %}<h1>値渡し: 辞書型</h1>{% endblock %}
+
+{% block content %}
+    <h1>{{key}}</h1>
+    <hr>
+    <h2>「.」で表示</h2>
+    <p1>{{key.temp}}は{{key.jinja}}です</p1>
+    <h2>「[]」で表示</h2>
+    <p1>{{key['temp']}}は{{key['jinja']}}です</p1>
+{% endblock %}
