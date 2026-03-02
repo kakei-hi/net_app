@@ -7,7 +7,9 @@
 {% endblock %}
 
 {% block content %}
-<a href="{{ url_for('item_list') }}">LISTへ</a>
+<a href="{{ url_for('item_list') }}">商品一覧画面</a>
+<br>
+<a href="{{ url_for('show_for_list') }}">動的商品一覧画面</a>
 {% endblock %}
 
 {% block footer %}

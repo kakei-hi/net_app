@@ -1,0 +1,17 @@
+{% extends "jinja/base2.html" %}
+
+{% block title %}IF-ELSE{% endblock %}
+
+{% block header %}<h1>条件分岐</h1>{% endblock %}
+
+{% block content %}
+    {% if color == 'red' %}
+        <p><span style="color:red;">Apple</span></p>
+    {% elif color == 'yellow' %}
+        <p><span style="color:yellow;">Banana</span></p>
+    {% elif color == 'pink' %}
+        <p><span style="color:pink;">Cherry</span></p>
+    {% else %}
+        <p>Not Found</p>
+    {% endif %}
+{% endblock %}

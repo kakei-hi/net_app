@@ -60,6 +60,37 @@ def show_jinja_class():
     user2 = User('花子', 25)
     return render_template('jinja/show4.html', user1=user1, user2=user2)
 
+# ========================================
+# テンプレートで制御文を使う
+# ========================================
+#  繰り返し
+class Item:
+    # コンストラクタ
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
+    # メソッド（表示用）
+    def __str__(self):
+        return f"商品ID: {self.id}, 商品名: {self.name}"
+
+@app.route('/for_list')
+def show_for_list():
+    item_list = [Item(1, 'だんご'), Item(2, 'おにぎり'), Item(3, 'すし')]
+    return render_template('for_list.html', items=item_list)
+
+# 条件分岐 #1
+@app.route('/if_detail/<int:id>')
+def show_if_detail(id):
+    item_list = [Item(1, 'だんご'), Item(2, 'おにぎり'), Item(3, 'すし')]
+    return render_template('if_detail.html',show_id=id, items=item_list)
+
+# 条件分岐 #2
+@app.route('/if')
+@app.route('/if/<target>')
+def show_jinja_if(target='colorless'):
+    print(target)
+    return render_template('jinja/if_else.html', color=target)
+
 # Run the application
 if __name__ == '__main__':
     app.run(debug=True)
