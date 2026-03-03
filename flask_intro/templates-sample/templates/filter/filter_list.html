@@ -1,0 +1,20 @@
+{% extends "filter/base3.html" %}
+
+{% block header %}
+    <h1>フィルター: 変数</h1>
+{% endblock %}
+
+{% block content %}
+    <p>リストの内容</p>
+    <ul>
+        {% for user in users %}
+            <li>{{ user }}</li>
+        {% endfor %}
+    </ul>
+    <hr>
+    <p>【最初のユーザー】{{ users | first }}</p>
+    <p>【最後のユーザー】{{ users | last }}</p>
+    <p>【リストの長さ】{{ users | length }}</p>
+    <p>【1つに結合】{{ users | join('=>') }}</p>
+    <p>【ランダム】{{ users | random }}</p>
+{% endblock %}

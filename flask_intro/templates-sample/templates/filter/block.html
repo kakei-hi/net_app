@@ -1,0 +1,14 @@
+{% extends "filter/base3.html" %}
+
+{% block header %}
+    <h1>フィルター: 文全体</h1>
+{% endblock %}
+
+{% block content %}
+    <p>【フィルターなし】</p>
+    this is a {{ word }}.
+    <p>【フィルターあり】</p>
+    {% filter upper %}
+        this is a {{ word }}.
+    {% endfilter %}
+{% endblock %}

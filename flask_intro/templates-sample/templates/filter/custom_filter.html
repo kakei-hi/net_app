@@ -1,0 +1,12 @@
+{%extends "filter/base3.html" %}
+
+{% block header %}
+    <h1>Custom Filter</h1>
+{% endblock %}
+
+{% block content %}
+    <p>{{ text | truncate }}</p>
+    <p>{{ text | truncate(length=2) }}</p>
+    <p>{{ long_text | truncate }}</p>
+    <p>{{ long_text | truncate(length=7) }}</p>
+{% endblock %}

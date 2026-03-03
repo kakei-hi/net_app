@@ -91,6 +91,44 @@ def show_jinja_if(target='colorless'):
     print(target)
     return render_template('jinja/if_else.html', color=target)
 
+# ========================================
+# テンプレートでフィルタを使う
+# ========================================
+# フィルタ: 全体
+@app.route('/filter')
+def show_filter_block():
+    word = 'pen'
+    return render_template('filter/block.html', word=word)
+
+# フィルタ: 特定の変数
+@app.route('/filter2')
+def show_filter_variable():
+    # クラスを作成
+    momo = User('桃太郎', 18)
+    kinta = User('金太郎', 20)
+    ura = User('浦島太郎', 100)
+    kaguya = User('かぐや姫', 1000)
+    kasa = User('笠地蔵', 200)
+    # リストを作成
+    users_list = [momo, kinta, ura, kaguya, kasa]
+    return render_template('filter/filter_list.html', users=users_list)
+
+# フィルタ: カスタムフィルタ
+## カスタムフィルタを定義
+@app.template_filter('truncate')
+def str_truncate(value, length=10):
+    if len(value) > length:
+        return value[:length] + '...'
+    else:
+        return value
+    
+## カスタムフィルタを使用するルート
+@app.route('/custom_filter')
+def show_custom_filter():
+    text = '寿限無'
+    long_text = 'じゅげむじゅげむごこうのすりきれ'
+    return render_template('filter/custom_filter.html', text=text, long_text=long_text)
+
 # Run the application
 if __name__ == '__main__':
     app.run(debug=True)
