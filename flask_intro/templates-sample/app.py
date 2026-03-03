@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, abort
+from werkzeug.exceptions import NotFound    # for custom error handling
 
 # Create a Flask application instance
 app = Flask(__name__)
@@ -128,6 +129,18 @@ def show_custom_filter():
     text = '寿限無'
     long_text = 'じゅげむじゅげむごこうのすりきれ'
     return render_template('filter/custom_filter.html', text=text, long_text=long_text)
+
+# エラーハンドリング
+@app.errorhandler(NotFound)
+def page_not_found(error):
+    msg = error.description
+    print(f'エラー内容: ', msg)
+    return render_template('errors/404.html'), 404
+
+# abort処理
+@app.route('/abort')
+def create_exception():
+    abort(404, 'このページは存在しません。')
 
 # Run the application
 if __name__ == '__main__':
