@@ -1,0 +1,13 @@
+# R関連
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# 一般的なPython仮想環境名もついでに除外しておく
+.venv/
+venv/
+env/
+envs/
+__pycache__/
+*.pyc
