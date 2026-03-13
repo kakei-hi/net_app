@@ -1,15 +1,7 @@
 {
   "python.defaultInterpreterPath": "/Users/hidekazukakei/Documents/GitHub/course/net_app/envs/bin/python",
   "python-envs.defaultEnvManager": "ms-python.python:conda",
-  "python-envs.defaultPackageManager": "ms-python.python:conda"
-}
-
-# Code RunnerにPythonの実行環境を指定
-{
-  "code-runner.runInTerminal": true
-}
-
-{
+  "python-envs.defaultPackageManager": "ms-python.python:conda",
   "code-runner.runInTerminal": true,
   "code-runner.executorMap": {
     "python": "\"${workspaceFolder}/envs/bin/python\" -u"
