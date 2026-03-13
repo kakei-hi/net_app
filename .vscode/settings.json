@@ -3,3 +3,15 @@
   "python-envs.defaultEnvManager": "ms-python.python:conda",
   "python-envs.defaultPackageManager": "ms-python.python:conda"
 }
+
+# Code RunnerにPythonの実行環境を指定
+{
+  "code-runner.runInTerminal": true
+}
+
+{
+  "code-runner.runInTerminal": true,
+  "code-runner.executorMap": {
+    "python": "\"${workspaceFolder}/envs/bin/python\" -u"
+  }
+}
