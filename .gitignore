@@ -13,3 +13,4 @@ __pycache__/
 *.pyc
 
 # .DS_StoreはmacOSのFinderが生成するファイルで、プロジェクトには不要なので除外
+.DS_Store
