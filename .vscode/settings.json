@@ -1,7 +1,16 @@
 {
-  "python.defaultInterpreterPath": "/Users/hidekazukakei/Documents/GitHub/course/net_app/envs/bin/python",
-  "python-envs.defaultEnvManager": "ms-python.python:conda",
-  "python-envs.defaultPackageManager": "ms-python.python:conda",
+  // 1) ワークスペースの仮想環境（venv）を明示
+  "python.defaultInterpreterPath": "${workspaceFolder}/envs/bin/python",
+
+  // 2) 新しい Environments 拡張を使い、ターミナルで自動アクティベート
+  "python.useEnvsExtension": true,
+  "python-envs.terminal.autoActivationType": "command", // or "shellStartup"
+
+  // 3) 環境マネージャは venv / パッケージマネージャは pip を優先
+  "python-envs.defaultEnvManager": "ms-python.python:venv",
+  "python-envs.defaultPackageManager": "ms-python.python:pip",
+
+  // 4) Code Runner でも venv の Python を直指定（安定）
   "code-runner.runInTerminal": true,
   "code-runner.executorMap": {
     "python": "\"${workspaceFolder}/envs/bin/python\" -u"
