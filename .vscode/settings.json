@@ -1,18 +1,15 @@
 {
-  // 1) ワークスペースの仮想環境（venv）を明示
-  "python.defaultInterpreterPath": "${workspaceFolder}/envs/bin/python",
-
-  // 2) 新しい Environments 拡張を使い、ターミナルで自動アクティベート
-  "python.useEnvsExtension": true,
-  "python-envs.terminal.autoActivationType": "command", // or "shellStartup"
-
-  // 3) 環境マネージャは venv / パッケージマネージャは pip を優先
+  // --- Mamba / Python 設定 ---
+  "python.condaPath": "/Users/hidekazukakei/miniforge3/condabin/mamba",
+  "python.defaultInterpreterPath": "/Users/hidekazukakei/Documents/GitHub/course/net_app/envs/bin/python",
   "python-envs.defaultEnvManager": "ms-python.python:conda",
   "python-envs.defaultPackageManager": "ms-python.python:conda",
+  "python-envs.pythonProjects": [],
 
-  // 4) Code Runner でも venv の Python を直指定（安定）
+  // --- Code Runner 設定 ---
   "code-runner.runInTerminal": true,
+  "code-runner.fileDirectoryAsCwd": true,
   "code-runner.executorMap": {
-    "python": "\"${workspaceFolder}/envs/bin/python\" -u"
+    "python": "$pythonPath $fullFileName"
   }
 }
