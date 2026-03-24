@@ -1,4 +1,4 @@
-name: null
+name: net_app_env
 channels:
   - conda-forge
 dependencies:
