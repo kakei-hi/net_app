@@ -4,6 +4,17 @@
   "python.defaultInterpreterPath": "/Users/hidekazukakei/Documents/GitHub/course/net_app/envs/bin/python",
   "python-envs.defaultEnvManager": "ms-python.python:conda",
   "python-envs.defaultPackageManager": "ms-python.python:conda",
+  //"terminal.integrated.profiles.osx": {
+  //  "zsh (conda envs)": {
+  //    "path": "/bin/zsh",
+  //    "args": [
+  //      "-l",
+  //      "-c",
+  //      "source ~/miniforge3/etc/profile.d/conda.sh && conda activate /Users/hidekazukakei/Documents/GitHub/course/net_app/envs && exec zsh"
+  //      ]
+  //  }
+  //},
+  //"terminal.integrated.defaultProfile.osx": "zsh (conda envs)",
 
   // --- Code Runner 設定 ---
   "code-runner.runInTerminal": true,
