@@ -1,7 +1,7 @@
 {
   // --- Mamba / Python 設定 ---
-  "python.condaPath": "/Users/hidekazukakei/miniforge3/condabin/mamba",
-  "python.defaultInterpreterPath": "/Users/hidekazukakei/Documents/GitHub/course/net_app/envs/bin/python",
+  "python.condaPath": "/home/kakei/miniforge3/condabin/mamba",
+  "python.defaultInterpreterPath": "/home/kakei/course/net_app/envs/bin/python",
   "python-envs.defaultEnvManager": "ms-python.python:conda",
   "python-envs.defaultPackageManager": "ms-python.python:conda",
   //"terminal.integrated.profiles.osx": {
@@ -10,7 +10,7 @@
   //    "args": [
   //      "-l",
   //      "-c",
-  //      "source ~/miniforge3/etc/profile.d/conda.sh && conda activate /Users/hidekazukakei/Documents/GitHub/course/net_app/envs && exec zsh"
+  //      "source ~/miniforge3/etc/profile.d/conda.sh && conda activate /home/kakei/Documents/GitHub/course/net_app/envs && exec zsh"
   //      ]
   //  }
   //},

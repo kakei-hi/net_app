@@ -17,7 +17,7 @@ env/
 # settings.jsonはVSCodeの設定同期で同期されるが，
 # VSCodeの設定同期ではデフォルトで「OSに依存する設定」は同期されないため、
 # OSに依存する設定を含むsettings.jsonは.gitignoreに追加しておく
-settings.json
+.vscode/settings.json
 
 __pycache__/
 *.pyc
