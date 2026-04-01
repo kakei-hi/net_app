@@ -4,11 +4,21 @@
 .RData
 .Ruserdata
 
-# 一般的なPython仮想環境名もついでに除外しておく
+# 仮想環境を除外
+envs/
+
+# 仮想環境名はプロジェクトごとに異なるため、一般的な名前を除外しておく
 .venv/
 venv/
 env/
-envs/
+
+# Platform依存なファイルを除外
+# GitHubによる同期から除外しても
+# settings.jsonはVSCodeの設定同期で同期されるが，
+# VSCodeの設定同期ではデフォルトで「OSに依存する設定」は同期されないため、
+# OSに依存する設定を含むsettings.jsonは.gitignoreに追加しておく
+settings.json
+
 __pycache__/
 *.pyc
 
