@@ -1,12 +1,12 @@
-def simple_decorator(func):
-    def wrapper():
-        print("処理を開始します")
-        func()
-        print("処理を終了します")
+def decorator(func):
+    def wrapper(*args, **kwargs):
+       print("処理前")
+       print(func(*args, **kwargs))
+       print("処理後")
     return wrapper
 
-@simple_decorator
-def say_hello():
-    print("こんにちは")
+@decorator
+def add(a, b):
+    return a + b
 
-say_hello()
+add(2, 3)
