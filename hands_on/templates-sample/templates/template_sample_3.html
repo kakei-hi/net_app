@@ -1,0 +1,9 @@
+<!-- 繰り返し + 条件分岐 -->
+
+<ul>
+{% for item in items %}
+  {% if item != '' %}
+    <li>{{ item }}</li>
+  {% endif %}
+{% endfor %}
+</ul>
