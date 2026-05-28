@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}タイトル{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>共通ヘッダ</h1>
+    </header>
+
+    <main>
+        {% block content %}
+        <!-- ページごとの内容 -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>共通フッタ</p>
+    </footer>
+</body>
+</html>
