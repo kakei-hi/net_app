@@ -8,3 +8,7 @@
 <h2>このサイトについて</h2>
 <p>これは説明ページです</p>
 {% endblock %}
+
+{% block footer %}
+<p><a href="{{ url_for('index') }}">トップページへ戻る</a></p>
+{% endblock %}
