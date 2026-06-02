@@ -3,8 +3,8 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 @app.template_filter('add_san')
-def add_san_filter(nom):
-    return nom + "さん"
+def add_san_filter(name):
+    return name + "さん"
 
 @app.template_filter('shout')
 def shout_filter(message):
