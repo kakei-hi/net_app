@@ -7,7 +7,7 @@
   </head>
   <body>
     <h1>Flask の PRG パターン</h1>
-    <p class="note">
+    <p>
       PRG は <strong>Post-Redirect-Get</strong> の略です。<br>
       フォーム送信後にいったん <strong>redirect</strong> して、表示は <strong>GET</strong> で行います。<br>
       そのため、ページを再読み込みしても同じ POST がもう一度送られません。
@@ -24,7 +24,7 @@
     </form>
 
     {% if submitted %}
-    <div class="result">
+    <div>
       <h2>送信内容</h2>
       <p>名前: {{ name }}</p>
       <p>メッセージ: {{ message }}</p>
