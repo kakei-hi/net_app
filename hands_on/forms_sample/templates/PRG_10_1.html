@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PRG パターンサンプル</title>
+  </head>
+  <body>
+    <h1>Flask の PRG パターン</h1>
+    <p class="note">
+      PRG は <strong>Post-Redirect-Get</strong> の略です。<br>
+      フォーム送信後にいったん <strong>redirect</strong> して、表示は <strong>GET</strong> で行います。<br>
+      そのため、ページを再読み込みしても同じ POST がもう一度送られません。
+    </p>
+
+    <form method="post" action="{{ url_for('submit') }}">
+      <label for="name">名前</label>
+      <input type="text" id="name" name="name" value="{{ name }}" required>
+
+      <label for="message">メッセージ</label>
+      <textarea id="message" name="message" rows="4" required>{{ message }}</textarea>
+
+      <button type="submit">送信</button>
+    </form>
+
+    {% if submitted %}
+    <div class="result">
+      <h2>送信内容</h2>
+      <p>名前: {{ name }}</p>
+      <p>メッセージ: {{ message }}</p>
+      <p>この画面は GET で表示されています。更新してもフォームの二重送信は起きません。</p>
+    </div>
+    {% endif %}
+  </body>
+</html>
