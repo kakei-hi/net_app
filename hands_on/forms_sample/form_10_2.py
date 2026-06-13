@@ -10,7 +10,7 @@ def index():
     message = request.args.get("message", "")
     submitted = bool(name or message)
     return render_template(
-        "PRG_10_1.html",
+        "PRG_10_2.html",
         name=name,
         message=message,
         submitted=submitted,
