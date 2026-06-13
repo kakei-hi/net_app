@@ -1,8 +1,10 @@
+import os
+
 from flask import Flask, redirect, render_template, request, session, url_for
 
 app = Flask(__name__)
-# セッション機能のために必要
-app.secret_key = "session-demo-secret-key"
+# セッション機能のために必要（本番では環境変数で設定する）
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-key-only")
 
 
 @app.route("/", methods=["GET", "POST"])
