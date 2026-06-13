@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>セッション管理サンプル: 表示</title>
+  </head>
+  <body>
+    <h1>セッションから読み出した値</h1>
+
+    <p>名前: {{ name }}</p>
+    <p>メッセージ: {{ message }}</p>
+    <p>このブラウザでの送信回数: {{ access_count }}</p>
+
+    <p>上記はURLパラメータではなく、サーバー側セッションの値です。</p>
+
+    <p><a href="{{ url_for('form_page') }}">入力画面に戻る</a></p>
+
+    <form method="post" action="{{ url_for('clear_session') }}">
+      <button type="submit">セッションをクリア</button>
+    </form>
+  </body>
+</html>

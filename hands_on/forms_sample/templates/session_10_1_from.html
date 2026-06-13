@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>セッション管理サンプル: 入力</title>
+  </head>
+  <body>
+    <h1>セッション管理サンプル</h1>
+    <p>フォームに入力した値をセッションへ保存し、次画面で読み出します。</p>
+
+    <form method="post" action="{{ url_for('form_page') }}">
+      <label for="name">名前</label>
+      <input id="name" name="name" type="text" required>
+
+      <label for="message">メッセージ</label>
+      <textarea id="message" name="message" rows="4" required></textarea>
+
+      <button type="submit">セッションに保存して表示</button>
+    </form>
+  </body>
+</html>
