@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flask-WTF CSRF 対策サンプル</title>
+  </head>
+  <body>
+    <h1>Flask-WTF による CSRF 対策</h1>
+    <p>
+      このフォームは <code>form.hidden_tag()</code> により、
+      CSRF トークンが自動で埋め込まれます。
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <p><strong>[{{ category }}]</strong> {{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="post">
+      {{ form.hidden_tag() }}
+
+      <p>
+        {{ form.name.label }}<br>
+        {{ form.name(size=24) }}
+      </p>
+
+      <p>
+        {{ form.message.label }}<br>
+        {{ form.message(size=40) }}
+      </p>
+
+      <p>{{ form.submit() }}</p>
+    </form>
+
+    <hr>
+    <h2>確認手順</h2>
+    <ol>
+      <li>通常のフォーム送信は成功します。</li>
+      <li>次のコマンドでトークンなし POST を送ると 400 になります。</li>
+    </ol>
+    <pre>curl -X POST http://127.0.0.1:5000/ -d "name=evil&message=attack"</pre>
+  </body>
+</html>
