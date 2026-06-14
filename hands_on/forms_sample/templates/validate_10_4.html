@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flask-WTF バリデーションサンプル</title>
+  </head>
+  <body>
+    <h1>Flask-WTF のバリデーション</h1>
+    <p>
+      このサンプルでは、組み込みバリデータとカスタムバリデータを組み合わせて、
+      入力チェックの流れを確認できます。
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <p><strong>[{{ category }}]</strong> {{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="post">
+      {{ form.hidden_tag() }}
+
+      <p>
+        {{ form.name.label }}<br>
+        {{ form.name(size=24) }}
+        {% for error in form.name.errors %}
+          <br><span style="color: red;">{{ error }}</span>
+        {% endfor %}
+      </p>
+
+      <p>
+        {{ form.message.label }}<br>
+        {{ form.message(size=40) }}
+        {% for error in form.message.errors %}
+          <br><span style="color: red;">{{ error }}</span>
+        {% endfor %}
+      </p>
+
+      <p>{{ form.submit() }}</p>
+    </form>
+
+    <hr>
+    <h2>確認ポイント</h2>
+    <ul>
+      <li>名前が空なら DataRequired がエラーになります。</li>
+      <li>名前が 2 文字未満または 20 文字超なら Length がエラーになります。</li>
+      <li>名前に admin を入れるとカスタムバリデータがエラーになります。</li>
+    </ul>
+  </body>
+</html>
