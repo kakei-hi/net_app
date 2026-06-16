@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フォーム画面サンプル</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #0f766e;
+      --border: #d1d5db;
+      --error: #b91c1c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background: linear-gradient(135deg, #eef2ff, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .form-card {
+      width: 100%;
+      max-width: 560px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+      padding: 24px;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 1.5rem;
+    }
+
+    .description {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: inline-block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .inline-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .inline-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 400;
+    }
+
+    .inline-item input {
+      width: auto;
+      margin: 0;
+    }
+
+    .hint {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .required {
+      color: var(--error);
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+  </style>
+</head>
+<body>
+  <section class="form-card">
+    <h1>お問い合わせフォーム（サンプル）</h1>
+    <p class="description">このページはフォーム画面の見本です。送信先アプリは不要なため、送信しても画面遷移は行いません。</p>
+
+    <form action="#" method="post">
+      <div class="field">
+        <label for="name">お名前<span class="required">*</span></label>
+        <input id="name" name="name" type="text" placeholder="例: 山田 太郎" required>
+      </div>
+
+      <div class="field">
+        <label for="email">メールアドレス<span class="required">*</span></label>
+        <input id="email" name="email" type="email" placeholder="example@example.com" required>
+      </div>
+
+      <div class="field">
+        <label for="category">お問い合わせ種別</label>
+        <select id="category" name="category">
+          <option value="">選択してください</option>
+          <option value="service">サービスについて</option>
+          <option value="account">アカウントについて</option>
+          <option value="other">その他</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>返信方法</label>
+        <div class="inline-group">
+          <label class="inline-item"><input type="radio" name="reply" value="email" checked> メール</label>
+          <label class="inline-item"><input type="radio" name="reply" value="phone"> 電話</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="inline-item"><input type="checkbox" name="agreement" required> 利用規約に同意する<span class="required">*</span></label>
+        <p class="hint">チェックを入れないと送信できません。</p>
+      </div>
+
+      <div class="field">
+        <label for="message">お問い合わせ内容<span class="required">*</span></label>
+        <textarea id="message" name="message" placeholder="内容をご記入ください" required></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary">送信</button>
+        <button type="reset" class="secondary">クリア</button>
+      </div>
+    </form>
+  </section>
+</body>
+</html>
