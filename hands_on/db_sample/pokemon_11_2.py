@@ -83,4 +83,8 @@ with app.app_context():
 
     db.session.commit()
 
-    print("Inserted 1 record into each table: software, monster, type, monster_type")
+    for table_name, table in Base.metadata.tables.items():
+        print(f"【{table_name}】")
+        for column in table.columns:
+            print(f"  {column.name} ({column.type})")
+        print()
