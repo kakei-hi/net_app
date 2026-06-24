@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Integer, Date
+from sqlalchemy import String, Integer, Date, ForeignKey
 import datetime
 from pathlib import Path
     
@@ -38,7 +38,7 @@ class MonsterType(Base):
     __tablename__ = "monster_type"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    monster_id: Mapped[int] = mapped_column(Integer)
+    monster_id: Mapped[int] = mapped_column(ForeignKey("monster.id"))
     type_id: Mapped[int] = mapped_column(Integer)
 
 
