@@ -3,11 +3,16 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import String, Integer, Date
 import datetime
+from pathlib import Path
     
 class Base(DeclarativeBase):
     pass
 
-app = Flask(__name__)
+base_dir = Path(__file__).resolve().parent
+instance_dir = base_dir / "instance"
+instance_dir.mkdir(exist_ok=True)
+
+app = Flask(__name__, instance_path=str(instance_dir))
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pokemon.db"
 
 db = SQLAlchemy(model_class=Base)
