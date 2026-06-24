@@ -51,6 +51,7 @@ class Software(Base):
 
 
 with app.app_context():
+    # db.drop_all()
     db.create_all()
     for table_name, table in Base.metadata.tables.items():
         print(f"【{table_name}】")
