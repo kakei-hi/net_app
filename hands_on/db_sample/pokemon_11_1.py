@@ -24,7 +24,7 @@ class Monster(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
-    software_id: Mapped[int] = mapped_column(Integer)
+    software_id: Mapped[int] = mapped_column(ForeignKey("software.id"))
 
 
 class Type(Base):
@@ -39,7 +39,7 @@ class MonsterType(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     monster_id: Mapped[int] = mapped_column(ForeignKey("monster.id"))
-    type_id: Mapped[int] = mapped_column(Integer)
+    type_id: Mapped[int] = mapped_column(ForeignKey("type.id"))
 
 
 class Software(Base):
