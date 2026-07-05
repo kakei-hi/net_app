@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学生情報管理</title>
+  <style>
+    body {
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      margin-bottom: 0.5rem;
+    }
+    form {
+      display: grid;
+      gap: 0.75rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      background: #fafafa;
+    }
+    input {
+      padding: 0.45rem;
+      font-size: 1rem;
+    }
+    button {
+      width: 120px;
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>学生情報管理Webアプリ</h1>
+
+  <h2>データ登録</h2>
+  <form method="post" action="{{ url_for('student_list') }}">
+    <label>
+      学生番号
+      <input type="text" name="student_number" required>
+    </label>
+
+    <label>
+      氏名
+      <input type="text" name="student_name" required>
+    </label>
+
+    <label>
+      所属学部
+      <input type="text" name="faculty_name" list="faculty-list" required>
+      <datalist id="faculty-list">
+        {% for faculty in faculties %}
+          <option value="{{ faculty.name }}"></option>
+        {% endfor %}
+      </datalist>
+    </label>
+
+    <label>
+      履修科目（カンマ区切り）
+      <input type="text" name="subjects" placeholder="例: 数学, 英語, 情報科学">
+    </label>
+
+    <button type="submit">登録</button>
+  </form>
+
+  <h2>一覧取得</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>学生番号</th>
+        <th>氏名</th>
+        <th>所属学部</th>
+        <th>履修科目</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+        <tr>
+          <td>{{ student.student_number }}</td>
+          <td>{{ student.name }}</td>
+          <td>{{ student.faculty.name }}</td>
+          <td>
+            {% if student.enrollments %}
+              {{ student.enrollments | map(attribute='subject.name') | join(', ') }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="4">データがありません。</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
