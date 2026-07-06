@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>学生情報管理システム</title>
+    <style>
+        body { font-family: sans-serif; margin: 30px; background-color: #f9f9f9; }
+        h1, h2 { color: #333; }
+        .container { display: flex; gap: 40px; }
+        .form-section { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 350px; }
+        .list-section { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex-grow: 1; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input[type="text"], .form-group select { width: 100%; padding: 8px; box-sizing: border-box; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 5px; }
+        button { background: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
+        button:hover { background: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h1>学生情報管理Webアプリ</h1>
+    <hr>
+
+    <div class="container">
+        <div class="form-section">
+            <h2>学生登録フォーム</h2>
+            <form action="{{ url_for('register') }}" method="POST">
+                <div class="form-group">
+                    <label for="student_number">学生番号</label>
+                    <input type="text" id="student_number" name="student_number" placeholder="例: K25001" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">氏名</label>
+                    <input type="text" id="name" name="name" placeholder="例: 徳島 太郎" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="department_id">所属学部</label>
+                    <select id="department_id" name="department_id" required>
+                        <option value="">-- 学部を選択してください --</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept.id }}">{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>履修科目（複数選択可）</label>
+                    <div class="checkbox-group">
+                        {% for course in courses %}
+                            <label>
+                                <input type="checkbox" name="course_ids" value="{{ course.id }}">
+                                {{ course.name }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <button type="submit">データベースへ保存</button>
+            </form>
+        </div>
+
+        <div class="list-section">
+            <h2>登録学生一覧</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>学生番号</th>
+                        <th>氏名</th>
+                        <th>所属学部</th>
+                        <th>履修科目</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.student_number }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.department.name }}</td>
+                            <td>
+                                {% if student.courses %}
+                                    {% for course in student.courses %}
+                                        {{ course.name }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else: %}
+                                    <span style="color:#aaa;">未登録</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #999;">データがありません。フォームから登録してください。</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
