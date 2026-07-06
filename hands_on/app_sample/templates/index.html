@@ -87,7 +87,7 @@
                                     {% for course in student.courses %}
                                         {{ course.name }}{% if not loop.last %}, {% endif %}
                                     {% endfor %}
-                                {% else: %}
+                                {% else %}
                                     <span style="color:#aaa;">未登録</span>
                                 {% endif %}
                             </td>
