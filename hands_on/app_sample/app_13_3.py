@@ -1,6 +1,7 @@
 import os
 from flask import Flask, flash, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, Table
 from sqlalchemy.exc import IntegrityError
@@ -13,6 +14,9 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR, 'instance', 'students.db')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
+
+# CSRF保護の有効化
+csrf = CSRFProtect(app)
 
 # SQLAlchemyで利用するベースクラスを定義（SQLAlchemy 2.0+ スタイル）
 class Base(DeclarativeBase):
