@@ -38,7 +38,7 @@
                 {% endif %}
             {% endwith %}
             <form action="{{ url_for('register') }}" method="POST">
-                {{ csrf_token() }}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="form-group">
                     <label for="student_number">学生番号</label>
                     <input type="text" id="student_number" name="student_number" placeholder="例: K25001" required>
