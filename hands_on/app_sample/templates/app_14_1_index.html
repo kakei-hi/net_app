@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生情報管理システム</title>
+    <style>
+        body { font-family: "Hiragino Sans", "Yu Gothic", sans-serif; margin: 24px; background: #f5f7fb; color: #1f2937; }
+        h1, h2 { margin-top: 0; }
+        .page { display: grid; gap: 24px; }
+        .grid { display: grid; grid-template-columns: minmax(320px, 360px) 1fr; gap: 24px; align-items: start; }
+        .card { background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); padding: 20px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; }
+        .form-group input[type="text"], .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        .checkbox-group { display: grid; gap: 8px; }
+        .flash-message, .search-error { margin-bottom: 12px; padding: 10px 12px; border-radius: 8px; }
+        .flash-message.error, .search-error { background: #fef2f2; color: #b91c1c; }
+        .flash-message.success { background: #ecfdf3; color: #027a48; }
+        .search-row { display: flex; gap: 10px; align-items: end; }
+        .search-row .form-group { flex: 1; margin-bottom: 0; }
+        .button-row { display: flex; gap: 8px; }
+        button, .link-button { background: #2563eb; color: #fff; padding: 10px 14px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; }
+        button.danger { background: #dc2626; }
+        .link-button.secondary { background: #475569; }
+        table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+        th, td { border-bottom: 1px solid #e5e7eb; padding: 12px 10px; text-align: left; vertical-align: top; }
+        th { background: #f8fafc; }
+        .actions { display: flex; gap: 8px; align-items: center; }
+        .empty { color: #64748b; text-align: center; padding: 18px; }
+        @media (max-width: 860px) {
+            .grid { grid-template-columns: 1fr; }
+            .search-row, .button-row, .actions { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div>
+            <h1>学生情報管理Webアプリ</h1>
+            <p>学生の登録、検索、削除、履修科目変更を行います。</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div>
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="grid">
+            <section class="card">
+                <h2>学生登録</h2>
+                <form action="{{ url_for('register') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <label for="student_number">学生番号</label>
+                        <input type="text" id="student_number" name="student_number" placeholder="例: K25001" maxlength="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">氏名</label>
+                        <input type="text" id="name" name="name" maxlength="50" placeholder="例: 徳島 太郎" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department_id">所属学部</label>
+                        <select id="department_id" name="department_id" required>
+                            <option value="">-- 学部を選択してください --</option>
+                            {% for department in departments %}
+                                <option value="{{ department.id }}">{{ department.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>履修科目</label>
+                        <div class="checkbox-group">
+                            {% for course in courses %}
+                                <label>
+                                    <input type="checkbox" name="course_ids" value="{{ course.id }}">
+                                    {{ course.name }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <button type="submit">登録する</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>学生一覧</h2>
+                <form action="{{ url_for('index') }}" method="GET">
+                    <div class="search-row">
+                        <div class="form-group">
+                            <label for="keyword">学生番号または氏名で検索</label>
+                            <input type="text" id="keyword" name="keyword" value="{{ keyword }}" maxlength="50" placeholder="例: K25001 または 徳島">
+                        </div>
+                        <div class="button-row">
+                            <button type="submit">検索</button>
+                            <a class="link-button secondary" href="{{ url_for('index') }}">一覧へ戻す</a>
+                        </div>
+                    </div>
+                    {% if search_error %}
+                        <div class="search-error">{{ search_error }}</div>
+                    {% endif %}
+                </form>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>学生番号</th>
+                            <th>氏名</th>
+                            <th>所属学部</th>
+                            <th>履修科目</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <td>{{ student.student_number }}</td>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.department.name }}</td>
+                                <td>
+                                    {% if student.courses %}
+                                        {% for course in student.courses %}
+                                            {{ course.name }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        未登録
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="actions">
+                                        <a class="link-button secondary" href="{{ url_for('edit_courses', student_id=student.id) }}">履修科目変更</a>
+                                        <form action="{{ url_for('delete_student', student_id=student.id) }}" method="POST" onsubmit="return confirm('この学生レコードを削除しますか？');">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="danger">削除</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="empty">該当する学生データがありません。</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

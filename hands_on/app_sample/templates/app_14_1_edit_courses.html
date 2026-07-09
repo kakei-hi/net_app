@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>履修科目変更</title>
+    <style>
+        body { font-family: "Hiragino Sans", "Yu Gothic", sans-serif; margin: 24px; background: #f5f7fb; color: #1f2937; }
+        .card { max-width: 720px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); padding: 24px; }
+        .flash-message { margin-bottom: 12px; padding: 10px 12px; border-radius: 8px; }
+        .flash-message.error { background: #fef2f2; color: #b91c1c; }
+        .flash-message.success { background: #ecfdf3; color: #027a48; }
+        .student-meta { margin-bottom: 18px; padding: 14px; background: #f8fafc; border-radius: 8px; }
+        .checkbox-group { display: grid; gap: 10px; margin: 18px 0; }
+        .button-row { display: flex; gap: 10px; }
+        button, a { background: #2563eb; color: #fff; padding: 10px 14px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; }
+        a.secondary { background: #475569; }
+        @media (max-width: 640px) {
+            .button-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <section class="card">
+        <h1>履修科目変更</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div>
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="student-meta">
+            <div>学生番号: {{ student.student_number }}</div>
+            <div>氏名: {{ student.name }}</div>
+            <div>所属学部: {{ student.department.name }}</div>
+        </div>
+
+        <form action="{{ url_for('update_courses', student_id=student.id) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="checkbox-group">
+                {% for course in courses %}
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="course_ids"
+                            value="{{ course.id }}"
+                            {% if course in student.courses %}checked{% endif %}
+                        >
+                        {{ course.name }}
+                    </label>
+                {% endfor %}
+            </div>
+
+            <div class="button-row">
+                <button type="submit">変更する</button>
+                <a href="{{ url_for('index') }}" class="secondary">一覧へ戻る</a>
+            </div>
+        </form>
+    </section>
+</body>
+</html>
