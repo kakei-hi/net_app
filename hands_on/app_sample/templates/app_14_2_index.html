@@ -89,7 +89,7 @@
                                 <td>{{ student.student_number }}</td>
                                 <td>{{ student.name }}</td>
                                 <td>{{ student.department.name }}</td>
-                                <td>{{ student.courses|length }}</td>
+                                <td>{{ student.grades|length }}</td>
                                 <td>
                                     <div class="actions">
                                         <a class="action-link primary" href="{{ url_for('student_grades', student_id=student.id) }}">成績一覧</a>

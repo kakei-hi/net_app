@@ -4,7 +4,7 @@ import re
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
-from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint, or_, select
+from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint, inspect, or_, select, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, selectinload
 
 
@@ -43,27 +43,12 @@ class Department(db.Model):
     students: Mapped[list['Student']] = relationship(back_populates='department')
 
 
-class StudentCourse(db.Model):
-    __tablename__ = 'student_courses'
-    __table_args__ = (
-        UniqueConstraint('student_id', 'course_id', name='uq_student_course'),
-    )
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    student_id: Mapped[int] = mapped_column(ForeignKey('students.id', ondelete='CASCADE'), nullable=False)
-    course_id: Mapped[int] = mapped_column(ForeignKey('courses.id', ondelete='CASCADE'), nullable=False)
-
-
 class Course(db.Model):
     __tablename__ = 'courses'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True, nullable=False)
 
-    students: Mapped[list['Student']] = relationship(
-        secondary='student_courses',
-        back_populates='courses',
-    )
     grades: Mapped[list['Grade']] = relationship(back_populates='course')
 
 
@@ -76,10 +61,6 @@ class Student(db.Model):
     department_id: Mapped[int] = mapped_column(ForeignKey('departments.id'), nullable=False)
 
     department: Mapped['Department'] = relationship(back_populates='students')
-    courses: Mapped[list['Course']] = relationship(
-        secondary='student_courses',
-        back_populates='students',
-    )
     grades: Mapped[list['Grade']] = relationship(back_populates='student')
 
 
@@ -93,7 +74,7 @@ class Grade(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     student_id: Mapped[int] = mapped_column(ForeignKey('students.id', ondelete='CASCADE'), nullable=False)
     course_id: Mapped[int] = mapped_column(ForeignKey('courses.id', ondelete='CASCADE'), nullable=False)
-    score: Mapped[int] = mapped_column(nullable=False)
+    score: Mapped[int | None] = mapped_column(nullable=True)
 
     student: Mapped['Student'] = relationship(back_populates='grades')
     course: Mapped['Course'] = relationship(back_populates='grades')
@@ -110,7 +91,7 @@ def get_courses() -> list[Course]:
 def get_students(keyword: str = '') -> list[Student]:
     stmt = (
         select(Student)
-        .options(selectinload(Student.department), selectinload(Student.courses))
+        .options(selectinload(Student.department), selectinload(Student.grades).selectinload(Grade.course))
         .order_by(Student.student_number)
     )
     cleaned_keyword = keyword.strip()
@@ -129,7 +110,6 @@ def get_student(student_id: int) -> Student | None:
         select(Student)
         .options(
             selectinload(Student.department),
-            selectinload(Student.courses),
             selectinload(Student.grades).selectinload(Grade.course),
         )
         .where(Student.id == student_id)
@@ -165,26 +145,23 @@ def validate_score(score_raw: str) -> tuple[int | None, str | None]:
 
 
 def get_grade_rows(student: Student) -> list[dict[str, object]]:
-    grade_map = {grade.course_id: grade for grade in student.grades}
     rows: list[dict[str, object]] = []
 
-    for course in sorted(student.courses, key=lambda item: item.name):
-        grade = grade_map.get(course.id)
+    for grade in sorted(student.grades, key=lambda item: item.course.name):
         rows.append({
-            'course': course,
+            'course': grade.course,
             'grade': grade,
-            'has_grade': grade is not None,
+            'has_grade': grade.score is not None,
         })
 
     return rows
 
 
-def get_available_courses(student: Student) -> list[Course]:
-    graded_course_ids = {grade.course_id for grade in student.grades}
-    return [course for course in sorted(student.courses, key=lambda item: item.name) if course.id not in graded_course_ids]
+def get_available_courses(student: Student) -> list[Grade]:
+    return [grade for grade in sorted(student.grades, key=lambda item: item.course.name) if grade.score is None]
 
 
-def get_grading_target(student: Student, course_id_raw: str, available_courses: list[Course]) -> tuple[Course | None, str | None]:
+def get_grading_target(student: Student, course_id_raw: str, available_courses: list[Grade]) -> tuple[Grade | None, str | None]:
     cleaned_course_id = course_id_raw.strip()
     if not cleaned_course_id:
         return None, '履修科目を選択してください。'
@@ -192,10 +169,32 @@ def get_grading_target(student: Student, course_id_raw: str, available_courses: 
         return None, '履修科目の値が不正です。'
 
     course_id = int(cleaned_course_id)
-    for course in available_courses:
-        if course.id == course_id:
-            return course, None
+    for grade in available_courses:
+        if grade.course_id == course_id:
+            return grade, None
     return None, '選択した履修科目は登録対象ではありません。'
+
+
+def ensure_grade_rows() -> None:
+    students = list(db.session.scalars(select(Student).options(selectinload(Student.grades))))
+    courses = get_courses()
+
+    existing_pairs = {
+        (grade.student_id, grade.course_id)
+        for student in students
+        for grade in student.grades
+    }
+
+    new_rows: list[Grade] = []
+    for student in students:
+        for course in courses:
+            if (student.id, course.id) in existing_pairs:
+                continue
+            new_rows.append(Grade(student_id=student.id, course_id=course.id, score=None))
+
+    if new_rows:
+        db.session.add_all(new_rows)
+        db.session.commit()
 
 
 @app.route('/', methods=['GET'])
@@ -240,12 +239,12 @@ def register_grade(student_id: int):
         flash('対象の学生が見つかりません。', 'error')
         return redirect(url_for('index'))
 
-    available_courses = get_available_courses(student)
+    available_grades = get_available_courses(student)
     if request.method == 'POST':
         if request.form.get('action') == 'cancel':
             return redirect(url_for('student_grades', student_id=student_id))
 
-        course, course_error = get_grading_target(student, request.form.get('course_id', ''), available_courses)
+        grade, course_error = get_grading_target(student, request.form.get('course_id', ''), available_grades)
         score, score_error = validate_score(request.form.get('score', ''))
 
         errors = [error for error in [course_error, score_error] if error is not None]
@@ -254,20 +253,20 @@ def register_grade(student_id: int):
                 flash(error, 'error')
             return redirect(url_for('register_grade', student_id=student_id))
 
-        if course is None or score is None:
+        if grade is None or score is None:
             flash('成績の登録に失敗しました。', 'error')
             return redirect(url_for('register_grade', student_id=student_id))
 
-        db.session.add(Grade(student_id=student.id, course_id=course.id, score=score))
+        grade.score = score
         db.session.commit()
-        flash(f'学生 {student.name} の {course.name} の成績を登録しました。', 'success')
+        flash(f'学生 {student.name} の {grade.course.name} の成績を登録しました。', 'success')
         return redirect(url_for('student_grades', student_id=student_id))
 
     selected_course_id = request.args.get('course_id', type=int)
     return render_template(
         'app_14_2_grade_register.html',
         student=student,
-        available_courses=available_courses,
+        available_courses=available_grades,
         selected_course_id=selected_course_id,
     )
 
@@ -335,16 +334,38 @@ def seed_data() -> None:
         db.session.flush()
 
         students_by_number = {student.student_number: student for student in students}
-        students_by_number['K25001'].courses = [courses['プログラミング演習'], courses['データベース論'], courses['離散数学']]
-        students_by_number['K25002'].courses = [courses['データベース論'], courses['離散数学']]
-        students_by_number['K25003'].courses = [courses['離散数学']]
 
         db.session.add_all([
             Grade(student_id=students_by_number['K25001'].id, course_id=courses['プログラミング演習'].id, score=88),
             Grade(student_id=students_by_number['K25001'].id, course_id=courses['データベース論'].id, score=91),
+            Grade(student_id=students_by_number['K25001'].id, course_id=courses['離散数学'].id, score=None),
             Grade(student_id=students_by_number['K25002'].id, course_id=courses['データベース論'].id, score=75),
+            Grade(student_id=students_by_number['K25002'].id, course_id=courses['離散数学'].id, score=None),
+            Grade(student_id=students_by_number['K25003'].id, course_id=courses['離散数学'].id, score=None),
         ])
 
+    db.session.commit()
+
+
+def migrate_student_courses_to_grades() -> None:
+    inspector = inspect(db.engine)
+    if 'student_courses' not in inspector.get_table_names():
+        return
+
+    existing_grade_pairs = {
+        (student_id, course_id)
+        for student_id, course_id in db.session.execute(
+            select(Grade.student_id, Grade.course_id)
+        )
+    }
+
+    for student_id, course_id in db.session.execute(text('SELECT student_id, course_id FROM student_courses')):
+        if (student_id, course_id) in existing_grade_pairs:
+            continue
+        db.session.add(Grade(student_id=student_id, course_id=course_id, score=None))
+
+    db.session.commit()
+    db.session.execute(text('DROP TABLE student_courses'))
     db.session.commit()
 
 
@@ -353,6 +374,8 @@ if __name__ == '__main__':
 
     with app.app_context():
         db.create_all()
+        migrate_student_courses_to_grades()
         seed_data()
+        ensure_grade_rows()
 
     app.run(debug=True)
