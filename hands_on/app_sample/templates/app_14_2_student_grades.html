@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成績一覧</title>
+    <style>
+        body { margin: 0; font-family: "Hiragino Sans", "Yu Gothic", sans-serif; background: linear-gradient(135deg, #f6f8ff 0%, #eef4ff 45%, #f7fbf8 100%); color: #1f2937; }
+        .page { max-width: 1000px; margin: 0 auto; padding: 28px 20px 40px; }
+        .card { background: rgba(255, 255, 255, 0.94); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 18px; box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08); padding: 22px; backdrop-filter: blur(8px); }
+        .header { display: flex; justify-content: space-between; gap: 16px; align-items: start; margin-bottom: 18px; }
+        h1, h2 { margin: 0; }
+        .meta-grid { display: grid; gap: 6px; margin-top: 12px; color: #334155; }
+        .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .button-row a, button { border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; padding: 11px 14px; font-weight: 700; }
+        .primary { background: #2563eb; color: #fff; }
+        .secondary { background: #475569; color: #fff; }
+        .flash-message { margin-bottom: 12px; padding: 11px 12px; border-radius: 10px; }
+        .flash-message.error { background: #fef2f2; color: #b91c1c; }
+        .flash-message.success { background: #ecfdf3; color: #027a48; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { border-bottom: 1px solid #e2e8f0; padding: 12px 10px; text-align: left; vertical-align: top; }
+        th { background: #f8fafc; }
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .status { font-weight: 700; }
+        .status.registered { color: #0f766e; }
+        .status.empty { color: #b45309; }
+        .empty { text-align: center; color: #64748b; padding: 18px 10px; }
+        @media (max-width: 760px) {
+            .header, .button-row, .actions { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="card" style="margin-bottom: 18px;">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+            <div class="header">
+                <div>
+                    <h1>成績一覧</h1>
+                    <div class="meta-grid">
+                        <div>学生番号: {{ student.student_number }}</div>
+                        <div>氏名: {{ student.name }}</div>
+                        <div>所属学部: {{ student.department.name }}</div>
+                    </div>
+                </div>
+                <div class="button-row">
+                    <a href="{{ url_for('register_grade', student_id=student.id) }}" class="secondary">成績登録へ</a>
+                    <a href="{{ url_for('index') }}" class="primary">トップページへ戻る</a>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>履修科目</th>
+                        <th>状態</th>
+                        <th>成績</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in grade_rows %}
+                        <tr>
+                            <td>{{ row.course.name }}</td>
+                            <td>
+                                {% if row.has_grade %}
+                                    <span class="status registered">登録済み</span>
+                                {% else %}
+                                    <span class="status empty">未登録</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if row.has_grade %}
+                                    {{ row.grade.score }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    {% if row.has_grade %}
+                                        <a class="primary" href="{{ url_for('edit_grade', student_id=student.id, course_id=row.course.id) }}">修正する</a>
+                                    {% else %}
+                                        <a class="secondary" href="{{ url_for('register_grade', student_id=student.id, course_id=row.course.id) }}">登録する</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="empty">履修科目が登録されていません。</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
+</body>
+</html>
