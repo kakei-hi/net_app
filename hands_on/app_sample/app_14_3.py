@@ -35,6 +35,13 @@ db = SQLAlchemy(app, model_class=Base)
 STUDENT_NUMBER_PATTERN = re.compile(r'^[A-Za-z0-9][A-Za-z0-9-]{2,19}$')
 
 
+# ============================================================
+# ORMモデル定義
+# - Student と Department は多対1
+# - Student と Course は Grade（サロゲートキー付き中間テーブル）で多対多
+# ============================================================
+
+
 class Department(db.Model):
     __tablename__ = 'departments'
 
@@ -84,6 +91,10 @@ class Grade(db.Model):
     course: Mapped['Course'] = relationship(back_populates='grades')
 
 
+# ============================================================
+# 参照系ヘルパー
+# ============================================================
+
 def get_departments() -> list[Department]:
     return list(db.session.scalars(select(Department).order_by(Department.name)))
 
@@ -93,6 +104,7 @@ def get_courses() -> list[Course]:
 
 
 def get_students(keyword: str = '') -> list[Student]:
+    # 一覧画面で必要になる関連データを先読みし、N+1クエリを避ける。
     stmt = (
         select(Student)
         .options(selectinload(Student.department), selectinload(Student.grades).selectinload(Grade.course))
@@ -129,6 +141,10 @@ def get_student_grade(student_id: int, course_id: int) -> Grade | None:
     )
     return db.session.scalar(stmt)
 
+
+# ============================================================
+# バリデーション
+# ============================================================
 
 def validate_student_form(form) -> tuple[list[str], dict[str, object]]:
     errors: list[str] = []
@@ -179,6 +195,7 @@ def validate_course_ids(course_values: list[str]) -> tuple[list[str], list[int]]
         course_ids.append(int(course_value))
 
     unique_course_ids = list(dict.fromkeys(course_ids))
+    # 存在確認は件数比較で行い、不正ID混入をまとめて検出する。
     if unique_course_ids:
         course_count = db.session.scalar(select(db.func.count(Course.id)).where(Course.id.in_(unique_course_ids)))
         if course_count != len(unique_course_ids):
@@ -209,12 +226,18 @@ def validate_score(score_raw: str) -> tuple[int | None, str | None]:
     return score, None
 
 
+# ============================================================
+# 更新系ヘルパー
+# ============================================================
+
 def create_grade_records(student: Student, course_ids: list[int]) -> None:
+    # 初回登録時は成績未入力（None）で中間テーブル行を作成する。
     for course_id in course_ids:
         student.grades.append(Grade(course_id=course_id, score=None))
 
 
 def replace_student_courses(student: Student, course_ids: list[int]) -> None:
+    # 既存履修から外れた科目は削除し、新規選択のみ追加する。
     existing_grades_by_course_id = {grade.course_id: grade for grade in student.grades}
     selected_course_ids = set(course_ids)
 
@@ -256,8 +279,14 @@ def get_grading_target(course_id_raw: str, available_grades: list[Grade]) -> tup
     return None, '選択した履修科目は登録対象ではありません。'
 
 
+# ============================================================
+# ルーティング
+# ============================================================
+
 @app.route('/', methods=['GET'])
 def index():
+    # 一覧取得の基本フロー:
+    # リクエスト受信 -> DB検索 -> テンプレートへ引き渡し -> HTML応答
     keyword = request.args.get('keyword', '')
     search_error = None
     students = get_students()
@@ -281,6 +310,8 @@ def index():
 
 @app.route('/register', methods=['POST'])
 def register():
+    # 登録フロー:
+    # 入力受信 -> 検証 -> Student/Grade生成 -> 保存 -> 一覧へリダイレクト
     errors, payload = validate_student_form(request.form)
     if errors:
         for error in errors:
@@ -307,6 +338,7 @@ def register():
 
 @app.route('/students/<int:student_id>/delete', methods=['POST'])
 def delete_student(student_id: int):
+    # 検索結果から対象学生を削除し、一覧へ戻す。
     student = db.session.get(Student, student_id)
     if student is None:
         flash('削除対象の学生が見つかりません。', 'error')
@@ -335,6 +367,7 @@ def edit_courses(student_id: int):
 
 @app.route('/students/<int:student_id>/courses', methods=['POST'])
 def update_courses(student_id: int):
+    # チェックボックスの選択結果で履修科目を上書き更新する。
     student = get_student(student_id)
     if student is None:
         flash('対象の学生が見つかりません。', 'error')
@@ -354,6 +387,7 @@ def update_courses(student_id: int):
 
 @app.route('/students/<int:student_id>/grades', methods=['GET'])
 def student_grades(student_id: int):
+    # 学生ごとの成績一覧を表示する。
     student = get_student(student_id)
     if student is None:
         flash('対象の学生が見つかりません。', 'error')
@@ -368,6 +402,7 @@ def student_grades(student_id: int):
 
 @app.route('/students/<int:student_id>/grades/new', methods=['GET', 'POST'])
 def register_grade(student_id: int):
+    # 成績未登録の科目のみを選択候補として表示・登録する。
     student = get_student(student_id)
     if student is None:
         flash('対象の学生が見つかりません。', 'error')
@@ -407,6 +442,7 @@ def register_grade(student_id: int):
 
 @app.route('/students/<int:student_id>/grades/<int:course_id>/edit', methods=['GET', 'POST'])
 def edit_grade(student_id: int, course_id: int):
+    # 既存成績の修正。キャンセル時はDB更新を行わない。
     student = get_student(student_id)
     if student is None:
         flash('対象の学生が見つかりません。', 'error')
@@ -439,6 +475,7 @@ def edit_grade(student_id: int, course_id: int):
 
 
 def seed_data() -> None:
+    # 起動時に最低限のマスタとサンプル学生を投入する。
     if db.session.scalar(select(db.func.count(Department.id))) == 0:
         db.session.add_all([
             Department(name='工学部'),
@@ -482,6 +519,7 @@ def seed_data() -> None:
 
 
 if __name__ == '__main__':
+    # 初回起動時はDBファイルとテーブルを作成し、サンプルデータを投入する。
     os.makedirs(INSTANCE_DIR, exist_ok=True)
 
     with app.app_context():
