@@ -479,6 +479,7 @@ def seed_data() -> None:
     if db.session.scalar(select(db.func.count(Department.id))) == 0:
         db.session.add_all([
             Department(name='工学部'),
+            Department(name='医学部'),
             Department(name='理学部'),
             Department(name='文学部'),
         ])
@@ -488,6 +489,7 @@ def seed_data() -> None:
             Course(name='プログラミング演習'),
             Course(name='データベース論'),
             Course(name='離散数学'),
+            Course(name='生理学基礎'),
         ])
 
     db.session.flush()
@@ -497,9 +499,10 @@ def seed_data() -> None:
         courses = {course.name: course for course in db.session.scalars(select(Course)).all()}
 
         students = [
-            Student(student_number='K25001', name='徳島 太郎', department_id=departments['工学部'].id),
-            Student(student_number='K25002', name='佐藤 花子', department_id=departments['理学部'].id),
-            Student(student_number='K25003', name='山田 次郎', department_id=departments['文学部'].id),
+            Student(student_number='K25001', name='丹下健三', department_id=departments['工学部'].id),
+            Student(student_number='S34032', name='湯川秀樹', department_id=departments['理学部'].id),
+            Student(student_number='K25003', name='大佛次郎', department_id=departments['文学部'].id),
+            Student(student_number='M25004', name='緒方洪庵', department_id=departments['医学部'].id),
         ]
         db.session.add_all(students)
         db.session.flush()
@@ -510,9 +513,10 @@ def seed_data() -> None:
             Grade(student_id=students_by_number['K25001'].id, course_id=courses['プログラミング演習'].id, score=88),
             Grade(student_id=students_by_number['K25001'].id, course_id=courses['データベース論'].id, score=91),
             Grade(student_id=students_by_number['K25001'].id, course_id=courses['離散数学'].id, score=None),
-            Grade(student_id=students_by_number['K25002'].id, course_id=courses['データベース論'].id, score=75),
-            Grade(student_id=students_by_number['K25002'].id, course_id=courses['離散数学'].id, score=None),
+            Grade(student_id=students_by_number['S34032'].id, course_id=courses['データベース論'].id, score=75),
+            Grade(student_id=students_by_number['S34032'].id, course_id=courses['離散数学'].id, score=None),
             Grade(student_id=students_by_number['K25003'].id, course_id=courses['離散数学'].id, score=None),
+            Grade(student_id=students_by_number['M25004'].id, course_id=courses['生理学基礎'].id, score=None),
         ])
 
     db.session.commit()
