@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成績登録</title>
+    <style>
+        body { margin: 0; font-family: "Hiragino Sans", "Yu Gothic", sans-serif; background: linear-gradient(135deg, #f6f8ff 0%, #eef4ff 45%, #f7fbf8 100%); color: #1f2937; }
+        .page { max-width: 760px; margin: 0 auto; padding: 28px 20px 40px; }
+        .card { background: rgba(255, 255, 255, 0.94); border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 18px; box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08); padding: 22px; backdrop-filter: blur(8px); }
+        h1 { margin: 0 0 14px; }
+        .meta-grid { display: grid; gap: 6px; margin-bottom: 18px; color: #334155; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 700; }
+        .form-group select, .form-group input[type="text"] { width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 10px; box-sizing: border-box; }
+        .button-row { display: flex; gap: 10px; margin-top: 18px; }
+        .button-row button, .button-row a { border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; padding: 11px 14px; font-weight: 700; }
+        .primary { background: #2563eb; color: #fff; }
+        .secondary { background: #475569; color: #fff; }
+        .flash-message { margin-bottom: 12px; padding: 11px 12px; border-radius: 10px; }
+        .flash-message.error { background: #fef2f2; color: #b91c1c; }
+        .flash-message.success { background: #ecfdf3; color: #027a48; }
+        .notice { background: #f8fafc; border-radius: 12px; padding: 12px 14px; color: #475569; margin-bottom: 18px; }
+        .empty { color: #64748b; }
+        @media (max-width: 640px) {
+            .button-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="card" style="margin-bottom: 18px;">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+            <h1>成績登録</h1>
+
+            <div class="meta-grid">
+                <div>学生番号: {{ student.student_number }}</div>
+                <div>氏名: {{ student.name }}</div>
+                <div>所属学部: {{ student.department.name }}</div>
+            </div>
+
+            {% if available_courses %}
+                <div class="notice">未登録の履修科目を選び、成績を 0 から 100 の整数で入力してください。</div>
+                <form action="{{ url_for('register_grade', student_id=student.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <label for="course_id">履修科目</label>
+                        <select id="course_id" name="course_id" required>
+                            <option value="">-- 科目を選択してください --</option>
+                            {% for course in available_courses %}
+                                <option value="{{ course.course_id }}" {% if selected_course_id == course.course_id %}selected{% endif %}>{{ course.course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="score">成績</label>
+                        <input type="text" id="score" name="score" inputmode="numeric" maxlength="3" placeholder="0 - 100" required>
+                    </div>
+                    <div class="button-row">
+                        <button type="submit" name="action" value="register" class="primary">成績登録</button>
+                        <button type="submit" name="action" value="cancel" class="secondary" formnovalidate>キャンセル</button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="notice empty">未登録の履修科目がありません。成績一覧画面から修正を行ってください。</div>
+                <div class="button-row">
+                    <a href="{{ url_for('student_grades', student_id=student.id) }}" class="primary">成績一覧へ戻る</a>
+                    <a href="{{ url_for('index') }}" class="secondary">学生一覧へ戻る</a>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>
