@@ -57,7 +57,7 @@
                         <select id="course_id" name="course_id" required>
                             <option value="">-- 科目を選択してください --</option>
                             {% for course in available_courses %}
-                                <option value="{{ course.id }}" {% if selected_course_id == course.id %}selected{% endif %}>{{ course.name }}</option>
+                                <option value="{{ course.course_id }}" {% if selected_course_id == course.course_id %}selected{% endif %}>{{ course.course.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
