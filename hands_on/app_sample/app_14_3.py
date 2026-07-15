@@ -8,6 +8,12 @@ from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint, or_, selec
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, selectinload
 
+# ============================================================
+# ディレクトリの設定
+# - BASE_DIR: このスクリプトのディレクトリ
+# - INSTANCE_DIR: データベースファイルを格納するディレクトリ
+# - DATABASE_PATH: SQLiteデータベースファイルのパス
+# ============================================================
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 INSTANCE_DIR = os.path.join(BASE_DIR, 'instance')
@@ -31,6 +37,15 @@ class Base(DeclarativeBase):
 
 
 db = SQLAlchemy(app, model_class=Base)
+
+
+# ============================================================
+# 正規表現パターン定義
+# - re.compile() で事前コンパイルしておくことで、バリデーション時のパフォーマンスを向上させる。
+# - 学生番号は3〜20文字の英数字またはハイフンで構成される
+# - 学生番号の先頭文字は英数字である必要がある ^[A-Za-z0-9]
+# - 学生番号の残りの文字は英数字またはハイフンで構成される [A-Za-z0-9-]{2,19}$
+# ============================================================
 
 STUDENT_NUMBER_PATTERN = re.compile(r'^[A-Za-z0-9][A-Za-z0-9-]{2,19}$')
 
@@ -57,6 +72,12 @@ class Course(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True, nullable=False)
 
+    #============================================================
+    # 1つの科目に対して複数の成績が紐づくリレーションを実現
+    # cascade='all, delete-orphan' 親オブジェクトと子オブジェクトのライフサイクルを連動させる設定
+    # all: 親オブジェクトの操作（追加、更新、削除）が子オブジェクトに伝播する
+    # delete-orphan: 子オブジェクトが親オブジェクトから切り離された場合、自動的に削除される
+    #============================================================
     grades: Mapped[list['Grade']] = relationship(back_populates='course', cascade='all, delete-orphan')
 
 
@@ -69,6 +90,7 @@ class Student(db.Model):
     department_id: Mapped[int] = mapped_column(ForeignKey('departments.id'), nullable=False)
 
     department: Mapped['Department'] = relationship(back_populates='students')
+
     grades: Mapped[list['Grade']] = relationship(
         back_populates='student',
         cascade='all, delete-orphan',
